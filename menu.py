@@ -23,6 +23,7 @@
 # 2. Verify that id_rsa file has permission 600 in the client #
 # 3. Verify that authorized_keys has permission 600 in the    #
 # server                                                      #
+# 4. "f" variable can be used to debug bash code              #
 #*************************************************************#
 
 #####Operating System libraries#####
@@ -70,7 +71,7 @@ file.close()
 file = open('/root/freeBSD_Files/port.txt', 'w')
 file.write(port)
 file.close()
-######Format and write client information
+###### Format and write client information
 f = open('/root/freeBSD_Files/groupName.txt', 'r') #Variable for client name
 line=f.readline()
 if line:
@@ -86,6 +87,10 @@ if line:
 file = open('/root/freeBSD_Files/clientInformation.txt', 'w')
 file.write(host+"|"+ip+"|"+name+"|") #give the correct format to data document
 file.close()
+###### Format and write client credentials
+file = open('/root/freeBSD_Files/clientCredentials.txt', 'w')
+file.write(ip+"|"+userName+"|"+passwd+"|"+port+"\n")
+file.close()
 ######Reading server data
 file = open("/root/freeBSD_Files/portServer.txt", "r")
 portServer = file.read()
@@ -98,27 +103,33 @@ ipServer = file.read()
 file.close()
 ######Send Public key to the server. IT NEEDS TO TYPE 2 TIMES PASSWORD
 print("Enter the server's password to copy public key")
-f = commands.getoutput("scp -P "+portServer+" /root/.ssh/id_rsa.pub "+userServer+"@"+ipServer+":.ssh/temp/")
+f = commands.getoutput("scp -o StrictHostKeyChecking=no -P "+portServer+" /root/.ssh/id_rsa.pub "+userServer+"@"+ipServer+":.ssh/temp/")
 print(f)
 print("Public key has been copied. Enter the server's password again to apply last modifications")
 f = commands.getoutput("ssh "+userServer+"@"+ipServer+" -p "+portServer+" 'cat .ssh/temp/id_rsa.pub >> .ssh/authorized_keys '")
 print(f)
 ######Once public key is on the server, the group directory is created and  copy information.
-	#verify if group directory exists.
+	# verify if group and ip directories exist.
 f = commands.getoutput("ssh "+userServer+"@"+ipServer+" -p "+portServer+"                               \
-	'if [ -d /var/www/html/centralizedConsole/"+groupName+"  ];                                         \
+	'if [ -d /var/www/html/centralizedConsole/web/clients/"+groupName+"  ];                             \
  		then echo \"This group already exists... Verifying if IP and user\" ;                           \
  	else echo \"Group does not exist. Directory has been created\" ;                                    \
- 		mkdir /var/www/html/centralizedConsole/"+groupName+";                                           \
+ 		mkdir /var/www/html/centralizedConsole/web/clients/"+groupName+";                               \
  	fi ;                                                                                                \
- 	if [ -d /var/www/html/centralizedConsole/"+groupName+"/"+ip+" ] ;                                   \
- 		then echo \"IP directory exist\" ;                                                                   \
- 	else mkdir /var/www/html/centralizedConsole/"+groupName+"/"+ip+" ;                                  \
+ 	if [ -d /var/www/html/centralizedConsole/web/clients/"+groupName+"/"+ip+" ] ;                       \
+ 		then echo \"IP directory exist\" ;                                                              \
+ 	else mkdir /var/www/html/centralizedConsole/web/clients/"+groupName+"/"+ip+" ;                      \
  		echo \"IP directory has been created.\" ;                                                       \
  	fi;                                                                                               '")
 print(f)
 
-f = commands.getoutput("scp -P "+portServer+" /root/freeBSD_Files/clientInformation.txt                  \
-	/root/freeBSD_Files/description.txt /root/freeBSD_Files/userName.txt /root/freeBSD_Files/passwd.txt  \
-	/root/freeBSD_Files/port.txt "+userServer+"@"+ipServer+":/var/www/html/centralizedConsole/"+groupName+
+	# Copy all files onto server
+f = commands.getoutput("scp -P "+portServer+" /root/freeBSD_Files/clientInformation.txt                 \
+	/root/freeBSD_Files/description.txt /root/freeBSD_Files/clientCredentials.txt                       \
+	"+userServer+"@"+ipServer+":/var/www/html/centralizedConsole/web/clients/"+groupName+
 	"/"+ip+"/" )
+print(f)
+
+f = commands.getoutput("ssh "+userServer+"@"+ipServer+" -p "+portServer+" 'cat /var/www/html/centralizedConsole/web/clients/"+
+	groupName+"/"+ip+"/clientCredentials.txt >> /var/www/html/centralizedConsole/web/clients/clientsCredentials '" )
+print(f)
