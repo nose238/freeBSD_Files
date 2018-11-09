@@ -16,17 +16,17 @@ lines = len(  list(  open("config.xml", "r+")    )   )
 numberline = 0
 for line in configXML:
     numberline += 1
-    if "<separator>" in line:
+    if "<squidguarddest>" in line:
         break
     elif numberline == lines:
         file =  open("config.xml", "r+")
         number = 0
         for l in file:
-            if "</filter>" in l:
+            if "</installedpackages>" in l:
                 file.seek(number)
                 string = file.readlines()
                 file.seek(number)
-                file.write("\t\t<separator>\n\t\t\t<wan></wan>\n\t\t\t<lan></lan>\n\t\t</separator>\n")
+                file.write("\t\t<squidguarddest>\n\n\t\t</squidguarddest>\n")
                 for otherline in string:
                     file.write(otherline)
                 break
@@ -34,6 +34,7 @@ for line in configXML:
         file.close()
         break
 configXML.close()
+
 
 #####Start variables section#####
 Sq=0      #squid
@@ -55,15 +56,15 @@ Sqg4=0    #squidg4
 
 #####Start XML labels section#####
 #Words to search, it means, the xml labels for squid
-label="<filter>"                   #Start label for firewall rules
-label1="</filter>"                 #End label for firewall
-labelA="<filter>"                  #Start label for firewall rules
-labelA1="</filter>"                #End label for firewall
+label="<squidguarddest>"                   #Start label for target categories
+label1="</squidguarddest>"                 #End label for target categories
+labelA="<squidguarddest>"                  #Start label for target categories
+labelA1="</squidguarddest>"                #End label for target categories
 
 ####SquidGuard Section####
-labelsq="<?xml version=\"1.0\"?>"  #Start label for XMLconfiguration file
-label1sq="<filter>"                #Start firewall label
-label2sq="</filter>"               #Start firewall label
+labelsq="<?xml version=\"1.0\"?>" #Start label for XMLconfiguration file
+label1sq="<squidguarddest>"       #Start target categories label
+label2sq="</squidguarddest>"      #Start target categories label
 label3sq="</pfsense>"             #End label for XML configuration file
 
 ####Aux variables for increase the counter####
@@ -81,17 +82,17 @@ with open("config.xml") as f:
 with open("config.xml") as f:
     for line in f:
         Sq2 += 1
-        if auxLabel in line and Sq2 > squid1:
+        if label1 in line:
             squid2 = (Sq2-1)
 
 #command for cut an interval of speciffic lines and create a new file with those lines
-#Firewall rules user doc
-command1  = 'sed \''+str(squid1)+','+str(squid2)+' !d\' config.xml > rulesUser.xml'
+#Target categpries user doc
+command1  = 'sed \''+str(squid1)+','+str(squid2)+' !d\' config.xml > targetsUser.xml'
 os.system(command1)
-####End user section####
+####End the user section####
 
 ####Start the admin section####
-#read the Xml Admin file
+#read the Xml admin file
 with open("conf.xml") as f:
     for line in f:
         SqA += 1
@@ -101,26 +102,22 @@ with open("conf.xml") as f:
     for line in f:
         SqA1 += 1
         if labelA1 in line:
-            squidA1 = (SqA1)
-with open("conf.xml") as f:
-    for line in f:
-        SqA2 += 1
-        if auxLabel in line and SqA2 < squidA1:
-            squidA2 = (SqA2-1)
+            squidA1 = (SqA1-1)
 
 #command for cut an interval of speciffic lines and create a new file with those lines
-#Firewall rules admin doc
-commandA1  = 'sed \''+str(squidA)+','+str(squidA2)+' !d\' conf.xml > rulesAdmin.xml'
+#Target categories admin doc
+commandA1  = 'sed \''+str(squidA)+','+str(squidA1)+' !d\' conf.xml > targetsAdmin.xml'
 os.system(commandA1)
-####End admin section####
+#####End admin section#####
 
 ####Start merge Section####
-commandMix1 = 'cat rulesUser.xml rulesAdmin.xml > finalRules.xml'
-commandremoveU1 = 'rm -r -f rulesUser.xml'
-commandremoveA1 = 'rm -r -f rulesAdmin.xml'
+commandMix1 = 'cat targetsUser.xml targetsAdmin.xml > finalTargets.xml'
+commandremoveU1 = 'rm -r -f targetsUser.xml'
+commandremoveA1 = 'rm -r -f targetsAdmin.xml'
 os.system(commandMix1)
 os.system(commandremoveU1)
 os.system(commandremoveA1)
+#####End merge section#####
 
 #####Start get final document section#####
 with open("config.xml") as f:
@@ -141,48 +138,43 @@ with open("config.xml") as f:
 with open("config.xml") as f:
     for line in f:
         Sqg3 += 1
-        if auxLabel in line and Sqg3 < squidg2:
-            squidg3 = (Sqg3)
-with open("config.xml") as f:
-    for line in f:
-        Sqg4 += 1
         if label3sq in line:
-            squidg4 = (Sqg4)
+            squidg3 = (Sqg3)
 
 #command for cut an interval of speciffic lines and create a new file with those lines
-#before Firewall Rules doc
-commandsq1  = 'sed \''+str(squidg)+','+str(squidg1)+' !d\' config.xml > beforeRules.xml'
+#before Target categories doc
+commandsq1  = 'sed \''+str(squidg)+','+str(squidg1)+' !d\' config.xml > beforeTargets.xml'
 os.system(commandsq1)
-#before Aliases doc
-commandsq2  = 'sed \''+str(squidg3)+','+str(squidg4)+' !d\' config.xml > beforeEnd.xml'
+#before Target categories doc
+commandsq2  = 'sed \''+str(squidg2)+','+str(squidg3)+' !d\' config.xml > beforeEnd.xml'
 os.system(commandsq2)
-####get final document section####
+#####End get final document section#####
 
-###Start semifinal merge Section####
-commandMixsq1 = 'cat beforeRules.xml finalRules.xml > finalsq1.xml'
-commandremovesq1 = 'rm -r -f beforeRules.xml'
-commandremovesqg1 = 'rm -r -f finalRules.xml'
+####Start semifinal merge Section####
+commandMixsq1 = 'cat beforeTargets.xml finalTargets.xml > finalsq1.xml'
+commandremovesq1 = 'rm -r -f beforeTargets.xml'
+commandremovesqg1 = 'rm -r -f finalTargets.xml'
 os.system(commandMixsq1)
 os.system(commandremovesq1)
 os.system(commandremovesqg1)
 commandMixsq2 = 'cat finalsq1.xml beforeEnd.xml > finalsq2.xml'
-commandremovesq2 = 'rm -r -f beforeEnd.xml'
-commandremovesqg2 = 'rm -r -f finalsq1.xml'
+commandremovesq2 = 'rm -r -f finalsq1.xml'
+commandremovesqg2 = 'rm -r -f beforeEnd.xml'
 os.system(commandMixsq2)
 os.system(commandremovesq2)
 os.system(commandremovesqg2)
-####End semifinal merge section####
+#####End semifinal merge section#####
 
-####Start the final section####
+####Start final section####
 commandDelete1 = 'rm -r -f conf.xml'
 commandDelete2 = 'rm -r -f config.xml'
-commandDelete3 = 'mv finalsq2.xml config.xml'
+commandDelete3 = 'mv finalsq2.xml conf.xml'
 os.system(commandDelete1)
 os.system(commandDelete2)
 os.system(commandDelete3)
-####End the final section####
+####End final section####
 
 #apply changes and delete cache
 os.system("rm -f /cf/conf/config.xml")
-os.system("mv config.xml /cf/conf/config.xml")
+os.system("mv conf.xml /cf/conf/config.xml")
 os.system("rm -f /tmp/config.cache")
