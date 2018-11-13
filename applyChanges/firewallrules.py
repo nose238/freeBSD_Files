@@ -3,8 +3,8 @@
 
 ################################################################
 # This Code Has Been Developed By                              #
-#Jozic Espinoza  -- AKA HackeMatte                             #
-# Eduardo Marquez                                              #
+# Jozic Espinoza  -- AKA HackeMatte                            #
+# Eduardo Marquez -- nose238@hotmail.com                       #
 ################################################################
 import os
 
