@@ -46,11 +46,10 @@ for line in configXML:
                 for otherline in string:
                     file.write(otherline)
                 break
-                number += len(l)
+            number += len(l)
         file.close()
         break
 configXML.close()
-
 
 #####Start variables section#####
 Sq=0      #squid
