@@ -17,6 +17,22 @@ numberline = 0
 for line in configXML:
     numberline += 1
     if "<squidguarddest>" in line:
+        nextLine = configXML.next()
+        if nextLine == "\t\t</squidguarddest>\n":
+            file =  open("config.xml", "r+")
+            number = 0
+            for l in file:
+                if "</squidguarddest>" in l:
+                    file.seek(number)
+                    string = file.readlines()
+                    file.seek(number)
+                    file.write("\n")
+                    for otherline in string:
+                        file.write(otherline)
+                    break
+                number += len(l)
+            file.close()
+            break
         break
     elif numberline == lines:
         file =  open("config.xml", "r+")
@@ -30,7 +46,7 @@ for line in configXML:
                 for otherline in string:
                     file.write(otherline)
                 break
-            number += len(l)
+                number += len(l)
         file.close()
         break
 configXML.close()
