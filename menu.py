@@ -82,7 +82,7 @@ file.write(host+"|"+ip+"|"+name+"|") #give the correct format to data document
 file.close()
 ###### Format and write client credentials
 file = open('/root/freeBSD_Files/clientCredentials.txt', 'w')
-file.write(ip+"|"+userName+"|"+passwd+"|"+port+"\n")
+file.write(ip+"|"+userName+"|"+passwd+"|"+port+"|"+groupName+"\n")
 file.close()
 ###### Reading server data
 file = open("/root/freeBSD_Files/portServer.txt", "r")
