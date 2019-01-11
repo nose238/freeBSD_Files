@@ -42,6 +42,22 @@ groupName = raw_input("Enter the group name to create database: ")
 ipAddress = raw_input("Enter your ip address: ")
 port = raw_input("Enter your port (SSH): ")
 description = raw_input("Enter a description: ")
+# Interfaces
+print("Now write the interfaces you have. ONE BY ONE.")
+still_interface = True
+print("Write your first interface. Then press Enter.")
+counter = 1
+all_interfaces = ""
+while still_interface:
+	interface = raw_input(str(counter)+". ")
+	repet = raw_input("Do you have more interfaces? y/n : ")
+	if repet == "n":
+		still_interface = False
+		all_interfaces = all_interfaces + interface
+	else: 
+		all_interfaces = all_interfaces + interface + "|"
+	counter += 1
+
 file = open('/root/freeBSD_Files/groupName.txt', 'w')
 file.write(groupName) #Change the hostname on data document
 file.close()
@@ -62,6 +78,9 @@ file.write(pcName) #Change the pcś ip address on data document
 file.close()
 file = open('/root/freeBSD_Files/port.txt', 'w')
 file.write(port)
+file.close()
+file = open('/root/freeBSD_Files/interfaces.txt', 'w')
+file.write(all_interfaces)
 file.close()
 
 ###### Format and write client information
@@ -122,6 +141,7 @@ print(f)
 	# Copy all files onto server
 f = commands.getoutput("scp -P "+portServer+" /root/freeBSD_Files/clientInformation.txt                 \
 	/root/freeBSD_Files/description.txt /root/freeBSD_Files/clientCredentials.txt                       \
+	/root/freeBSD_Files/interfaces.txt	                                                                \
 	"+userServer+"@"+ipServer+":/var/www/html/centralizedConsole/web/clients/"+groupName+
 	"/"+ip+"/" )
 print(f)
