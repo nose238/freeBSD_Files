@@ -42,6 +42,8 @@ def ssh_key(user):
 				print("\tStatus: " + str(key_status[1]))
 				exit()
 			else:
+				with open("my_group", "w") as my_group:
+					my_group.write(user)
 				print("\n\tThe SSH key was generated successfully!! ")
 
 
