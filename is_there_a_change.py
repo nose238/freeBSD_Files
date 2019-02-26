@@ -71,6 +71,7 @@ class App():
 								end_aux = 0
 								the_begin = ""
 								start_aux = 0
+								ip_found = False
 								for line in ips_to_change:
 									end_aux += len(line)
 									if line[:-1] == ip_to_find:
@@ -93,8 +94,29 @@ class App():
 									empty_txt = True
 
 							if ip_found:
+								# It generates a backup.
+
+								backup_dir = os.path.isdir("/backupCentralizedConsole")
+								if backup_dir:
+									pass
+								else:
+									os.makedirs("/backupCentralizedConsole")
+								backup = commands.getstatusoutput("cp /cf/conf/config.xml /backupCentralizedConsole/cfconf.xml")
+								backup = commands.getstatusoutput("cp /conf/config.xml /backupCentralizedConsole/conf.xml")
+			
+								# Here the change will be applied
+								download_change_to_do = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
+									" "+group_name+"@"+server_ip+":change_to_do.txt /root/freeBSD_Files/")
+								download_xml = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
+									" "+group_name+"@"+server_ip+":conf.xml /root/freeBSD_Files/applyChanges/")
+								with open("/root/freeBSD_Files/change_to_do.txt") as change_to_do_txt:
+									change_to_do = change_to_do_txt.read()
+
+								changesApplied = commands.getoutput("python2 /root/freeBSD_Files/applyChanges/"+change_to_do[:-1])
+								print(changesApplied, " ")
+
+
 								if empty_txt:
-									# Elim
 									delete_txt = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
 									 	'rm -f ips_to_change.txt ; ' ")
 									break
@@ -103,31 +125,8 @@ class App():
 									upload_txt = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
 										" /root/freeBSD_Files/ips_to_change.txt "+group_name+"@"+server_ip+": ")
 									break
-									
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+							else:
+								break
 					elif ips_to_change == "nonexistent":
 						ips_to_change = True
 						time.sleep(5)

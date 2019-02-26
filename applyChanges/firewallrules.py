@@ -11,15 +11,15 @@ import os
 
 os.system("cp /cf/conf/config.xml /root/freeBSD_Files/applyChanges/")
 # Extra code... verify if aliases tags are in the format required.
-configXML = open("config.xml", "r+")
-lines = len(  list(  open("config.xml", "r+")    )   )
+configXML = open("/root/freeBSD_Files/applyChanges/config.xml", "r+")
+lines = len(  list(  open("/root/freeBSD_Files/applyChanges/config.xml", "r+")    )   )
 numberline = 0
 for line in configXML:
     numberline += 1
     if "<separator>" in line:
         break
     elif numberline == lines:
-        file =  open("config.xml", "r+")
+        file =  open("/root/freeBSD_Files/applyChanges/config.xml", "r+")
         number = 0
         for l in file:
             if "</filter>" in l:
@@ -73,12 +73,12 @@ auxLabel="<separator>"
 ####Start user section####
 #read the Xml User file
 
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sq1 += 1
         if label in line:
             squid1 = (Sq1+1)
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sq2 += 1
         if auxLabel in line and Sq2 > squid1:
@@ -86,23 +86,23 @@ with open("config.xml") as f:
 
 #command for cut an interval of speciffic lines and create a new file with those lines
 #Firewall rules user doc
-command1  = 'sed \''+str(squid1)+','+str(squid2)+' !d\' config.xml > rulesUser.xml'
+command1  = 'sed \''+str(squid1)+','+str(squid2)+' !d\' /root/freeBSD_Files/applyChanges/config.xml > /root/freeBSD_Files/applyChanges/rulesUser.xml'
 os.system(command1)
 ####End user section####
 
 ####Start the admin section####
 #read the Xml Admin file
-with open("conf.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/conf.xml") as f:
     for line in f:
         SqA += 1
         if labelA in line:
             squidA = (SqA+1)
-with open("conf.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/conf.xml") as f:
     for line in f:
         SqA1 += 1
         if labelA1 in line:
             squidA1 = (SqA1)
-with open("conf.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/conf.xml") as f:
     for line in f:
         SqA2 += 1
         if auxLabel in line and SqA2 < squidA1:
@@ -110,40 +110,40 @@ with open("conf.xml") as f:
 
 #command for cut an interval of speciffic lines and create a new file with those lines
 #Firewall rules admin doc
-commandA1  = 'sed \''+str(squidA)+','+str(squidA2)+' !d\' conf.xml > rulesAdmin.xml'
+commandA1  = 'sed \''+str(squidA)+','+str(squidA2)+' !d\' /root/freeBSD_Files/applyChanges/conf.xml > /root/freeBSD_Files/applyChanges/rulesAdmin.xml'
 os.system(commandA1)
 ####End admin section####
 
 ####Start merge Section####
-commandMix1 = 'cat rulesUser.xml rulesAdmin.xml > finalRules.xml'
-commandremoveU1 = 'rm -r -f rulesUser.xml'
-commandremoveA1 = 'rm -r -f rulesAdmin.xml'
+commandMix1 = 'cat /root/freeBSD_Files/applyChanges/rulesUser.xml /root/freeBSD_Files/applyChanges/rulesAdmin.xml > /root/freeBSD_Files/applyChanges/finalRules.xml'
+commandremoveU1 = 'rm -r -f /root/freeBSD_Files/applyChanges/rulesUser.xml'
+commandremoveA1 = 'rm -r -f /root/freeBSD_Files/applyChanges/rulesAdmin.xml'
 os.system(commandMix1)
 os.system(commandremoveU1)
 os.system(commandremoveA1)
 
 #####Start get final document section#####
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sqg += 1
         if labelsq in line:
             squidg = (Sqg)
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sqg1 += 1
         if label1sq in line:
             squidg1 = (Sqg1)
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sqg2 += 1
         if label2sq in line:
             squidg2 = (Sqg2)
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sqg3 += 1
         if auxLabel in line and Sqg3 < squidg2:
             squidg3 = (Sqg3)
-with open("config.xml") as f:
+with open("/root/freeBSD_Files/applyChanges/config.xml") as f:
     for line in f:
         Sqg4 += 1
         if label3sq in line:
@@ -151,32 +151,32 @@ with open("config.xml") as f:
 
 #command for cut an interval of speciffic lines and create a new file with those lines
 #before Firewall Rules doc
-commandsq1  = 'sed \''+str(squidg)+','+str(squidg1)+' !d\' config.xml > beforeRules.xml'
+commandsq1  = 'sed \''+str(squidg)+','+str(squidg1)+' !d\' /root/freeBSD_Files/applyChanges/config.xml > /root/freeBSD_Files/applyChanges/beforeRules.xml'
 os.system(commandsq1)
 #before Aliases doc
-commandsq2  = 'sed \''+str(squidg3)+','+str(squidg4)+' !d\' config.xml > beforeEnd.xml'
+commandsq2  = 'sed \''+str(squidg3)+','+str(squidg4)+' !d\' /root/freeBSD_Files/applyChanges/config.xml > /root/freeBSD_Files/applyChanges/beforeEnd.xml'
 os.system(commandsq2)
 ####get final document section####
 
 ###Start semifinal merge Section####
-commandMixsq1 = 'cat beforeRules.xml finalRules.xml > finalsq1.xml'
-commandremovesq1 = 'rm -r -f beforeRules.xml'
-commandremovesqg1 = 'rm -r -f finalRules.xml'
+commandMixsq1 = 'cat /root/freeBSD_Files/applyChanges/beforeRules.xml /root/freeBSD_Files/applyChanges/finalRules.xml > /root/freeBSD_Files/applyChanges/finalsq1.xml'
+commandremovesq1 = 'rm -r -f /root/freeBSD_Files/applyChanges/beforeRules.xml'
+commandremovesqg1 = 'rm -r -f /root/freeBSD_Files/applyChanges/finalRules.xml'
 os.system(commandMixsq1)
 os.system(commandremovesq1)
 os.system(commandremovesqg1)
-commandMixsq2 = 'cat finalsq1.xml beforeEnd.xml > finalsq2.xml'
-commandremovesq2 = 'rm -r -f beforeEnd.xml'
-commandremovesqg2 = 'rm -r -f finalsq1.xml'
+commandMixsq2 = 'cat /root/freeBSD_Files/applyChanges/finalsq1.xml /root/freeBSD_Files/applyChanges/beforeEnd.xml > /root/freeBSD_Files/applyChanges/finalsq2.xml'
+commandremovesq2 = 'rm -r -f /root/freeBSD_Files/applyChanges/beforeEnd.xml'
+commandremovesqg2 = 'rm -r -f /root/freeBSD_Files/applyChanges/finalsq1.xml'
 os.system(commandMixsq2)
 os.system(commandremovesq2)
 os.system(commandremovesqg2)
 ####End semifinal merge section####
 
 ####Start the final section####
-commandDelete1 = 'rm -r -f conf.xml'
-commandDelete2 = 'rm -r -f config.xml'
-commandDelete3 = 'mv finalsq2.xml config.xml'
+commandDelete1 = 'rm -r -f /root/freeBSD_Files/applyChanges/conf.xml'
+commandDelete2 = 'rm -r -f /root/freeBSD_Files/applyChanges/config.xml'
+commandDelete3 = 'mv /root/freeBSD_Files/applyChanges/finalsq2.xml /root/freeBSD_Files/applyChanges/config.xml'
 os.system(commandDelete1)
 os.system(commandDelete2)
 os.system(commandDelete3)
@@ -184,5 +184,5 @@ os.system(commandDelete3)
 
 #apply changes and delete cache
 os.system("rm -f /cf/conf/config.xml")
-os.system("mv config.xml /cf/conf/config.xml")
+os.system("mv /root/freeBSD_Files/applyChanges/config.xml /cf/conf/config.xml")
 os.system("rm -f /tmp/config.cache")
