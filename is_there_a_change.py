@@ -43,7 +43,7 @@ class App():
 				then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
 			
 			if xml_status == "existent":					
-				
+				print("XML EXISTS")
 				ips_to_change = True
 				while ips_to_change:
 
@@ -52,6 +52,7 @@ class App():
 						then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
 					
 					if ips_to_change == "existent":
+						print("TXT EXISTS")
 						download_txt = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
 							" "+group_name+"@"+server_ip+":ips_to_change.txt /root/freeBSD_Files/")
 						# delete_txt = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
@@ -60,6 +61,7 @@ class App():
 						if download_txt[0] != 0:
 							print("It was not possible to download the file")
 						else: # TXT was downloaded
+							print("TXT DOWNLOADED")
 							ips_to_change = False
 							
 							# This code is going to search the client's IP in order to know if a change is required
@@ -95,6 +97,7 @@ class App():
 
 							if ip_found:
 								# It generates a backup.
+								print("IP FOUND")
 
 								backup_dir = os.path.isdir("/backupCentralizedConsole")
 								if backup_dir:
@@ -107,27 +110,39 @@ class App():
 								# Here the change will be applied
 								download_change_to_do = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
 									" "+group_name+"@"+server_ip+":change_to_do.txt /root/freeBSD_Files/")
+								print("CHANGE TO DO DOWNLOADED")
 								download_xml = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
 									" "+group_name+"@"+server_ip+":conf.xml /root/freeBSD_Files/applyChanges/")
+								print("XML DOWNLOADED")
 								with open("/root/freeBSD_Files/change_to_do.txt") as change_to_do_txt:
 									change_to_do = change_to_do_txt.read()
 
 								changesApplied = commands.getoutput("python2 /root/freeBSD_Files/applyChanges/"+change_to_do[:-1])
 								print(changesApplied, " ")
+								print("CHANGES HAS BEEN APPLIED")
+								delete_xml = commands.getstatusoutput("rm -f /root/freeBSD_Files/applyChanges/conf.xml")
+								delete_change_to_do = commands.getstatusoutput("rm -f /root/freeBSD_Files/change_to_do.txt")
 
 
 								if empty_txt:
 									delete_txt = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
 									 	'rm -f ips_to_change.txt ; ' ")
-									break
+									print("TXT HAS BEEN ELIMINATED")
+									delete_xml = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
+									 	'rm -f conf.xml ; ' ")
+									print("XML HAS BEEN ELIMINATED")
 								else:
 									# Send to the server the new txt
 									upload_txt = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
 										" /root/freeBSD_Files/ips_to_change.txt "+group_name+"@"+server_ip+": ")
-									break
-							else:
+									print("TXT HAS BEEN UPDATED")
 								break
+							else:
+								print("IP DOESNOT FOUND")
+							delete_txt = commands.getstatusoutput("rm -f /root/freeBSD_Files/ips_to_change.txt")
+							break
 					elif ips_to_change == "nonexistent":
+						print("TXT DOES NOT EXISTS")
 						ips_to_change = True
 						time.sleep(5)
 						# This loop is repeted in order to wait to other clients to update the "ips_to_change" file
