@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 ################################################################
 # This Code Has Been Developed By                              #
 # Jozic Espinoza  -- AKA HackeMatte                            #
-#E duardo Marquez -- nose238@hotmail.com                       #
+# Eduardo Marquez -- nose238@hotmail.com                       #
 ################################################################
 import os
 

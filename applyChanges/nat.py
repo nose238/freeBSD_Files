@@ -1,14 +1,18 @@
-confXML = open("/root/freeBSD_Files/applyChanges/conf.xml", "r")
-
-number = 0
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 ################################################################
 # This Code Has Been Developed By                              #
 # Eduardo Marquez -- nose238@hotmail.com                       #
 ################################################################
+
 import os
+
+confXML = open("/root/freeBSD_Files/applyChanges/conf.xml", "r")
+
+number = 0
+
+
 os.system("cp /cf/conf/config.xml /root/freeBSD_Files/applyChanges/")
 
 for line in confXML:
