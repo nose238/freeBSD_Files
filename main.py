@@ -17,6 +17,9 @@ tmp_file.close()
 tmp_file = open("ipServer.txt", "r")
 server_ip = tmp_file.read()
 tmp_file.close()
+tmp_file = open("my_ip.txt", "r")
+my_ip = tmp_file.read()
+tmp_file.close()
 
 # function to share the public key to the server
 def ssh_key(user):
@@ -105,6 +108,12 @@ while incorrect_option:
 							exit()
 						else:  
 							ssh_key(group_name)
+							make_client_dir = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
+								'mkdir xml/"+my_ip+" ; '  ")
+							if make_client_dir[0] != 0:
+								print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
+							else:
+								print("Client dir was created successfully in the server")
 						# You can print out the user_group_status variable if a promlem is happening to know why.
 					else:
 						print("Passwords don't match.")
@@ -118,6 +127,13 @@ while incorrect_option:
 		print("\nYou chose Join to a existent group.")
 		group_name = str(raw_input("Enter the group's name you want to join to: "))
 		ssh_key(group_name)
+		make_client_dir = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
+			'mkdir xml/"+my_ip+" ; '  ")
+		if make_client_dir[0] != 0:
+			print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
+		else:
+			print("Client dir was created successfully in the server")
+
 
 		
 	else: # ERROR
