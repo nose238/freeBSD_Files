@@ -49,6 +49,24 @@ def ssh_key(user):
 					my_group.write(user)
 				print("\n\tThe SSH key was generated successfully!! ")
 
+				print("Almost done...")
+				
+				temp = str(raw_input("Enter a description of your device (this will be used to generate a dir on the server) this description mustn't have any special character: "))
+				while True:
+					if temp[-1] == " ":
+						temp = temp[:-1]
+					elif temp[0] == " ":
+						temp = temp[1:]
+					else:
+						dir_name = temp.replace(" ", "_")
+						break
+				make_client_dir = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
+								'mkdir xml/"+dir_name+" ; '  ")
+				if make_client_dir[0] != 0:
+					print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
+				else:
+					print("Client dir was created successfully in the server")
+
 
 
 # main menu.
@@ -106,14 +124,8 @@ while incorrect_option:
 							print("\nIt was not possible to execute the code in the server")
 							print("\tStatus: " + str(user_group_status[1]))
 							exit()
-						else:  
+						else:
 							ssh_key(group_name)
-							make_client_dir = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
-								'mkdir xml/"+my_ip+" ; '  ")
-							if make_client_dir[0] != 0:
-								print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
-							else:
-								print("Client dir was created successfully in the server")
 						# You can print out the user_group_status variable if a promlem is happening to know why.
 					else:
 						print("Passwords don't match.")
@@ -127,15 +139,6 @@ while incorrect_option:
 		print("\nYou chose Join to a existent group.")
 		group_name = str(raw_input("Enter the group's name you want to join to: "))
 		ssh_key(group_name)
-		make_client_dir = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
-			'mkdir xml/"+my_ip+" ; '  ")
-		if make_client_dir[0] != 0:
-			print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
-		else:
-			print("Client dir was created successfully in the server")
-
-
-		
 	else: # ERROR
 		option = str(raw_input("\nChoose a correct option.\n1. Create a new group.\n2. Join to a existent group.\n"))
 		incorrect_option = True

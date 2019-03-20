@@ -3,36 +3,13 @@
 
 ################################################################
 # This Code Has Been Developed By                              #
-#Jozic Espinoza  -- AKA HackeMatte                             #
-#Eduardo Marquez -- nose238@hotmail.com                        #
+# Eduardo Marquez -- nose238@hotmail.com                        #
 ################################################################
-# Start code #
-##############
-
-###############################################################
-# All routes must be changed, these routes only are for test  #
-# this script, the correct route will be the local from the   #
-# user's PC                                                   #
-###############################################################
-
-#*************************************************************#
-#*************************************************************#
-# ***   ***  ***  *** IMPORTANT NOTES  **** *** *** *** ** ** #
-# 1. Verify that .ssh/ directory has permission 700 as in the #
-# server as in the client                                     #
-# 2. Verify that id_rsa file has permission 600 in the client #
-# 3. Verify that authorized_keys has permission 600 in the    #
-# server                                                      #
-# 4. "f" variable can be used to debug bash code              #
-#*************************************************************#
 
 import commands
 import socket
 
-
-print("You can press ctrl + c in any moment to cancel this prossess.\nPress enter to continue.")
-# Public key is generated
-f = commands.getoutput("yes y | ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N '' ; chmod 600 /root/.ssh/id_rsa ") 
+print("You can press ctrl + c in any moment to cancel this prossess.")
 
 ### Get all client informaton and write .txt's which contain it 
 pcName = socket.gethostname()
