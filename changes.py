@@ -35,13 +35,13 @@ class App():
 			tmp_file = open("/root/freeBSD_Files/my_group", "r")
 			group_name = tmp_file.read()
 			tmp_file.close()
-			tmp_file = open("/root/freeBSD_Files/my_ip.txt", "r")
-			my_ip = tmp_file.read()
+			tmp_file = open("/root/freeBSD_Files/dir_name.txt", "r")
+			dir_name = tmp_file.read()
 			tmp_file.close()
 			print("It works! " + time.strftime("%c"))
 			# Verify if we have to do a "ctrl + z" opertation.
 			ctrlz_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
-				'if [ -f xml/"+my_ip+"/ctrlz.txt  ];     \
+				'if [ -f xml/"+dir_name+"/ctrlz.txt  ];     \
 				then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
 			if ctrlz_status == "existent":
 				print("CTRL Z IS NEEDED")
@@ -55,7 +55,7 @@ class App():
 					restore_backup = commands.getoutput("rm -f /tmp/config.cache")
 					print("CTRLZ Z APPLIED")
 					delete_ctrlz_txt = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
-						'rm -f xml/"+my_ip+"/ctrlz.txt ' ")
+						'rm -f xml/"+dir_name+"/ctrlz.txt ' ")
 				else: 
 					print("IT WAS NOT POSSIBLE TO DO THE CTRL Z OPERATION. THERE IS NO BACKUP")
 			elif ctrlz_status == "nonexistent":
@@ -64,7 +64,7 @@ class App():
 				print("It was not possible to connect with the server")
 				print("Status: " + ctrlz_status)
 			xml_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
-				'if [ -f xml/"+my_ip+"/conf.xml  ];     \
+				'if [ -f xml/"+dir_name+"/conf.xml  ];     \
 				then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
 			if xml_status == "existent":					
 				print("XML EXISTS")
@@ -77,15 +77,15 @@ class App():
 				backup = commands.getstatusoutput("cp /conf/config.xml /backupCentralizedConsole/conf.xml")
 				print("BACKUP IS GENERATED")
 				change_to_do_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
-					'if [ -f xml/"+my_ip+"/change_to_do.txt  ];     \
+					'if [ -f xml/"+dir_name+"/change_to_do.txt  ];     \
 					then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
 				if change_to_do_status == "existent":
 					# Here the change will be applied
 					download_change_to_do = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
-						" "+group_name+"@"+server_ip+":xml/"+my_ip+"/change_to_do.txt /root/freeBSD_Files/")
+						" "+group_name+"@"+server_ip+":xml/"+dir_name+"/change_to_do.txt /root/freeBSD_Files/")
 					print("CHANGE TO DO DOWNLOADED")
 					download_xml = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
-						" "+group_name+"@"+server_ip+":xml/"+my_ip+"/conf.xml /root/freeBSD_Files/applyChanges/")
+						" "+group_name+"@"+server_ip+":xml/"+dir_name+"/conf.xml /root/freeBSD_Files/applyChanges/")
 					print("XML DOWNLOADED")
 					with open("/root/freeBSD_Files/change_to_do.txt") as change_to_do_txt:
 						change_to_do = change_to_do_txt.read()
@@ -95,10 +95,10 @@ class App():
 					delete_xml = commands.getstatusoutput("rm -f /root/freeBSD_Files/applyChanges/conf.xml")
 					delete_change_to_do = commands.getstatusoutput("rm -f /root/freeBSD_Files/change_to_do.txt")
 					delete_txt = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
-					 	'rm -f xml/"+my_ip+"/change_to_do.txt ; ' ")
+					 	'rm -f xml/"+dir_name+"/change_to_do.txt ; ' ")
 					print("CHANGE_TO_DO HAS BEEN ELIMINATED")
 					delete_xml = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
-					 	'rm -f xml/"+my_ip+"/conf.xml ; ' ")
+					 	'rm -f xml/"+dir_name+"/conf.xml ; ' ")
 					print("XML HAS BEEN ELIMINATED")
 				elif change_to_do_status == "nonexistent":
 					print("NOT POSSIBLE TO APLLY CHANGES. CHANGE_TO_DO_TXT DOESNOT EXISTS")

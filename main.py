@@ -66,6 +66,8 @@ def ssh_key(user):
 					print("ERROR. Client dir was not created. Status: " + str(make_client_dir[1]))
 				else:
 					print("Client dir was created successfully in the server")
+					with open("dir_name.txt", "w") as directory_name:
+						directory_name.write(dir_name)
 
 
 
