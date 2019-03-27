@@ -8,10 +8,10 @@
 
 import os
 
-# /root/freeBSD_Files/applyChanges/
 confXML = open("/root/freeBSD_Files/applyChanges/conf.xml", "r")
 
 number = 0
+
 
 os.system("cp /cf/conf/config.xml /root/freeBSD_Files/applyChanges/")
 
