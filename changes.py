@@ -39,32 +39,40 @@ class App():
 			dir_name = tmp_file.read()
 			tmp_file.close()
 			print("It works! " + time.strftime("%c"))
-			
-			print("TRYING TO GENERATE INTERFACES INFO")
-			os.system("cp /cf/conf/config.xml /root/freeBSD_Files/")
-			number = 0
-			begin = 0
-			with open("/root/freeBSD_Files/config.xml", "r") as confXML:
-				for line in confXML:
-					number += len(line)
-					if "<interfaces>" in line:
-						begin = number-len(line)
-						continue
-					elif "</interfaces>" in line:
-						end = number
-				confXML.seek(begin)
-				interfaces = confXML.read(end-begin)
-			os.system("rm -f /root/freeBSD_Files/config.xml")
-			with open("/root/freeBSD_Files/info.xml", "w") as infoXML:
-				infoXML.write(interfaces)
-			infoStatus = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
-				" /root/freeBSD_Files/info.xml "+group_name+"@"+server_ip+":xml/"+dir_name+"/ ")
-			if infoStatus[0] != 0:
-				print("SENDING INFO INTERFACES FAILED")
-			else:
-				print("INFO SENDED")
-			os.system("rm -f /root/freeBSD_Files/info.xml")
-
+			markups = ["interfaces", "aliases", "squidguardacl", "squidguarddest", "filter", "nat"]
+			for markup in markups:
+				print("TRYING TO GENERATE "+markup+" INFO")
+				os.system("cp /cf/conf/config.xml /root/freeBSD_Files/")
+				number = 0
+				begin = 0
+				with open("/root/freeBSD_Files/config.xml", "r") as confXML:
+					markup_exists = False
+					for line in confXML:
+						if "<"+markup+">" in line:
+							markup_exists = True
+					confXML.seek(0)
+					for line in confXML:
+						number += len(line)
+						if "<"+markup+">" in line:
+							begin = number-len(line)
+							continue
+						elif "</"+markup+">" in line:
+							end = number
+					confXML.seek(begin)
+					if markup_exists:
+						content = confXML.read(end-begin)
+					else:
+						content = "There is no info available. Maybe "+markup+" is not installed."
+				os.system("rm -f /root/freeBSD_Files/config.xml")
+				with open("/root/freeBSD_Files/info_"+markup+".xml", "w") as infoXML:
+					infoXML.write(content)
+				infoStatus = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
+					" /root/freeBSD_Files/info_"+markup+".xml "+group_name+"@"+server_ip+":xml/"+dir_name+"/ ")
+				if infoStatus[0] != 0:
+					print("SENDING INFO "+markup+" FAILED")
+				else:
+					print("INFO SENDED")
+				os.system("rm -f /root/freeBSD_Files/info_"+markup+".xml")
 			# Verify if we have to do a "ctrl + z" opertation.
 			ctrlz_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
 				'if [ -f xml/"+dir_name+"/ctrlz.txt  ];     \
