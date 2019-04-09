@@ -53,6 +53,8 @@ class App():
 					confXML.seek(0)
 					for line in confXML:
 						number += len(line)
+						if "<"+markup+">" in line and "</"+markup+">" in line:
+							continue
 						if "<"+markup+">" in line:
 							begin = number-len(line)
 							continue
