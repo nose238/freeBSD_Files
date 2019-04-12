@@ -39,6 +39,7 @@ class App():
 			dir_name = tmp_file.read()
 			tmp_file.close()
 			print("It works! " + time.strftime("%c"))
+			# Send the current configurations to the server
 			markups = ["interfaces", "aliases", "squidguardacl", "squidguarddest", "filter", "nat"]
 			for markup in markups:
 				print("TRYING TO GENERATE "+markup+" INFO")
@@ -99,6 +100,7 @@ class App():
 			else: 
 				print("It was not possible to connect with the server")
 				print("Status: " + ctrlz_status)
+			# Verify if a conf.xml to change is needed
 			xml_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
 				'if [ -f xml/"+dir_name+"/conf.xml  ];     \
 				then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
@@ -145,6 +147,66 @@ class App():
 			else: # ERROR
 				print("It was not possible to connect with the server")
 				print("Status: " + xml_status)
+			for markup in markups:
+				change_status = commands.getoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+"\
+					'if [ -f xml/"+dir_name+"/change_"+markup+".xml  ];     \
+					then echo \"existent\"; else echo \"nonexistent\" ; fi ; ' ")
+				if change_status == "existent":
+					print("change_"+markup+".xml EXISTS")
+					download_change = commands.getstatusoutput("scp -o StrictHostKeyChecking=no -P "+server_port+
+						" "+group_name+"@"+server_ip+":xml/"+dir_name+"/change_"+markup+".xml /root/freeBSD_Files/")
+					print(download_change)
+					with open("/root/freeBSD_Files/change_"+markup+".xml") as ind_change:
+						the_change = ind_change.read()
+					os.system("cp /cf/conf/config.xml /root/freeBSD_Files/")
+
+
+
+					print("COPY "+markup+" IN ORIGINAL CONF")
+					number = 0
+					begin = 0
+					with open("/root/freeBSD_Files/config.xml", "r") as confXML:
+						markup_exists = False
+						for line in confXML:
+							if "<"+markup+">" in line:
+								markup_exists = True
+						confXML.seek(0)
+						for line in confXML:
+							number += len(line)
+							if "<"+markup+">" in line and "</"+markup+">" in line:
+								continue
+							elif "<"+markup+">" in line:
+								begin = number-len(line)
+								continue
+							elif "</"+markup+">" in line:
+								end = number
+						if markup_exists:
+							confXML.seek(end)
+							the_rest = confXML.read()
+							content = the_change+"\n"+the_rest
+						else:
+							content = False
+					if content == False:
+						continue
+					else:
+						with open("/root/freeBSD_Files/config.xml", "r+") as changedXML:
+							changedXML.seek(begin)
+							changedXML.write(content)
+							print("CHANGE IN "+markup+" HAS BEEN COPIED")
+					# apply changes and delete cache
+					os.system("rm -f /cf/conf/config.xml")
+					os.system("mv /root/freeBSD_Files/config.xml /cf/conf/config.xml")
+					os.system("rm -f /tmp/config.cache")
+					os.system("rm -f /root/freeBSD_Files/config.xml")
+					delete_change_xml = commands.getstatusoutput("ssh "+group_name+"@"+server_ip+" -p "+server_port+" \
+					 	'rm -f xml/"+dir_name+"/change_"+markup+".xml ; ' ")
+					os.system("rm -f /root/freeBSD_Files/change_"+markup+".xml")
+
+
+				elif change_status == "nonexistent":
+					print("change_"+markup+".xml DOESNOT EXIST")
+				else:
+					print("Connection error:\nStatus: " + change_status)
 			time.sleep(10)
 #---------------------MAIN-------------------------------#        
 ###########Daemonization part starts######################
