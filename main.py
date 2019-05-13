@@ -25,6 +25,7 @@ tmp_file.close()
 def ssh_key(user):
 	print("\nNow a SSH key will be generated... Enter the '"+user+"' user's password when its needed")
 	key_status = commands.getstatusoutput("yes y | ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ''  ")
+	change_permises = commands.getstatusoutput("chmod 777 -R /var/www/html/centralizedConsole/web/clients") # This is not the best option
 	if key_status[0] != 0: # return 0 when the code is executed successfully
 		print("It was not possible to generate the SSH key... The program cannot continue")
 		print("\tStatus: " + str(key_status[1]))

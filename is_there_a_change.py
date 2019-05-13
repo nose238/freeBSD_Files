@@ -222,7 +222,7 @@ class App():
 				print("Status: " + xml_status)
 
 
-			time.sleep(10)
+			time.sleep(180)
 #---------------------MAIN-------------------------------#        
 ###########Daemonization part starts######################
 app = App()
